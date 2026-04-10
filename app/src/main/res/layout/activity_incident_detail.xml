@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Incident #INC-001"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1A237E"
+            android:layout_marginBottom="16dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Status: Active"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#FF5722"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/tv_details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Loading details..."
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="4dp" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Actions"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btn_update_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📊 Update Status"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#FF5722" />
+
+        <Button
+            android:id="@+id/btn_get_directions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🗺️ Get Directions"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#4CAF50" />
+
+        <Button
+            android:id="@+id/btn_team_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💬 Team Chat"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#2196F3" />
+
+        <Button
+            android:id="@+id/btn_upload_media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📸 Upload Photo/Video"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#FF9800" />
+
+        <Button
+            android:id="@+id/btn_add_voice_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🎤 Add Voice Note"
+            android:backgroundTint="#9C27B0" />
+
+    </LinearLayout>
+</ScrollView>

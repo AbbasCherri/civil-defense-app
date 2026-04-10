@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="incident_types">
+        <item>Fire</item>
+        <item>Medical Emergency</item>
+        <item>Traffic Accident</item>
+        <item>Flood</item>
+        <item>Earthquake</item>
+        <item>Hazardous Material</item>
+        <item>Building Collapse</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="priority_levels">
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>Critical</item>
+    </string-array>
+</resources>
