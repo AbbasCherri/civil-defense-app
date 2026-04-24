@@ -1,57 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <!-- Map placeholder -->
-    <View
-        android:id="@+id/map_placeholder"
+    <!-- Map Area -->
+    <FrameLayout
+        android:id="@+id/map_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#E0E0E0" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#E8F5E9">
 
-    <TextView
-        android:layout_width="wrap_content"
+        <!-- Background grid lines for childish map feel -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+    </FrameLayout>
+
+    <!-- Info Panel -->
+    <LinearLayout
+        android:id="@+id/info_panel"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="🗺️ Map View\n(Google Maps / Mapbox)\n\n📍 Active Incidents: 3\n🚒 Vehicles Online: 5"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:layout_centerInParent="true"
-        android:background="#AAFFFFFF"
-        android:padding="16dp" />
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:background="#FFF9C4"
+        android:minHeight="80dp">
 
-    <!-- Control Panel -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🗺️ Map Legend:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:padding="4dp" />
+
+    </LinearLayout>
+
+    <!-- Bottom Controls -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:elevation="8dp">
 
         <Button
             android:id="@+id/btn_refresh"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🔄 Refresh"
-            android:layout_marginEnd="4dp" />
-
-        <Button
-            android:id="@+id/btn_toggle_risk_zones"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="⚠️ Risk Zones"
-            android:layout_marginEnd="4dp" />
-
-        <Button
-            android:id="@+id/btn_toggle_vehicles"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="🚒 Vehicles" />
+            android:text="🔄 Refresh Map"
+            android:backgroundTint="#4CAF50" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

@@ -1,22 +1,35 @@
 package com.example.civildefence;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.civildefence.api.ApiClient;
+import com.example.civildefence.models.Incident;
+import java.util.HashMap;
+import java.util.Map;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class IncidentDetailActivity extends AppCompatActivity {
 
     private TextView tvTitle, tvDetails, tvStatus;
-    private Button btnUpdateStatus, btnGetDirections, btnTeamChat, btnUploadMedia, btnAddVoiceNote;
+    private Button btnUpdateStatus, btnGetDirections, btnTeamChat,
+            btnUploadMedia, btnAddVoiceNote;
+    private SharedPreferences prefs;
+    private int incidentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_incident_detail);
+
+        prefs = getSharedPreferences("civil_defense_prefs", MODE_PRIVATE);
 
         tvTitle = findViewById(R.id.tv_title);
         tvDetails = findViewById(R.id.tv_details);
@@ -27,65 +40,86 @@ public class IncidentDetailActivity extends AppCompatActivity {
         btnUploadMedia = findViewById(R.id.btn_upload_media);
         btnAddVoiceNote = findViewById(R.id.btn_add_voice_note);
 
-        Toast.makeText(this,
-                "API: GET /incidents/{id} - Fetching incident details",
-                Toast.LENGTH_SHORT).show();
+        incidentId = getIntent().getIntExtra("incident_id", 0);
 
-        // Sample incident data
-        tvTitle.setText("Incident #INC-001");
-        tvDetails.setText("Type: Fire\nPriority: HIGH\nLocation: Beirut Central District\nReported: 2026-04-10 14:30\nAssigned Team: Alpha Squad");
-        tvStatus.setText("Status: Active");
+        loadIncidentDetails();
 
-        // Update Status button
-        btnUpdateStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(IncidentDetailActivity.this,
-                        "API: PATCH /incidents/{id}/status\n" +
-                                "Valid transitions: Waiting → Active → In Progress → Resolved → Closed",
-                        Toast.LENGTH_LONG).show();
-            }
+        btnUpdateStatus.setOnClickListener(v -> {
+            String token = "Bearer " + prefs.getString("access_token", "");
+            Map<String, String> statusUpdate = new HashMap<>();
+            statusUpdate.put("status", "Closed");
+
+            ApiClient.getApiService(this)
+                    .updateIncidentStatus(token, incidentId, statusUpdate)
+                    .enqueue(new Callback<Incident>() {
+                        @Override
+                        public void onResponse(Call<Incident> call,
+                                               Response<Incident> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(IncidentDetailActivity.this,
+                                        "Status updated", Toast.LENGTH_SHORT).show();
+                                loadIncidentDetails();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Incident> call, Throwable t) {
+                            Toast.makeText(IncidentDetailActivity.this,
+                                    "Failed to update status", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
 
-        // Get Directions button
-        btnGetDirections.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(IncidentDetailActivity.this,
-                        "Calculating route to incident location\nOpening external maps app with destination: 33.8938, 35.5018",
-                        Toast.LENGTH_SHORT).show();
-            }
+        btnGetDirections.setOnClickListener(v -> {
+            // Open external maps app with coordinates
+            Toast.makeText(this, "Opening navigation...", Toast.LENGTH_SHORT).show();
         });
 
-        // Team Chat button
-        btnTeamChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(IncidentDetailActivity.this,
-                        "Opening team chat for incident #INC-001",
-                        Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(IncidentDetailActivity.this, ChatActivity.class));
-            }
+        btnTeamChat.setOnClickListener(v -> {
+            Intent intent = new Intent(IncidentDetailActivity.this,
+                    ChatActivity.class);
+            intent.putExtra("incident_id", incidentId);
+            startActivity(intent);
         });
 
-        // Upload Media button
-        btnUploadMedia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(IncidentDetailActivity.this,
-                        "API: POST /incidents/{id}/media\nUploading evidence photo/video (max 50MB)",
-                        Toast.LENGTH_SHORT).show();
-            }
+        btnUploadMedia.setOnClickListener(v -> {
+            // Open media upload
+            Toast.makeText(this, "Select media to upload", Toast.LENGTH_SHORT).show();
         });
 
-        // Add Voice Note button
-        btnAddVoiceNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(IncidentDetailActivity.this,
-                        "Starting voice recording for incident update\nAudio will be attached to incident record",
-                        Toast.LENGTH_SHORT).show();
-            }
+        btnAddVoiceNote.setOnClickListener(v -> {
+            // Start voice recording
+            Toast.makeText(this, "Recording voice note...", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void loadIncidentDetails() {
+        String token = "Bearer " + prefs.getString("access_token", "");
+
+        ApiClient.getApiService(this).getIncidentById(token, incidentId)
+                .enqueue(new Callback<Incident>() {
+                    @Override
+                    public void onResponse(Call<Incident> call, Response<Incident> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            Incident inc = response.body();
+                            tvTitle.setText("Incident #" + inc.getId());
+                            tvStatus.setText("Status: " + inc.getStatus());
+                            tvDetails.setText(
+                                    "Type: " + inc.getCategory() + "\n" +
+                                            "Priority: " + inc.getPriority() + "\n" +
+                                            "Location: " + inc.getLatitude() + ", " + inc.getLongitude() + "\n" +
+                                            "Description: " + inc.getDescription() + "\n" +
+                                            "Reported: " + inc.getCreatedAt()
+                            );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Incident> call, Throwable t) {
+                        Toast.makeText(IncidentDetailActivity.this,
+                                "Failed to load incident: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

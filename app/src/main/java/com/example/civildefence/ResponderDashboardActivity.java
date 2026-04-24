@@ -1,25 +1,34 @@
 package com.example.civildefence;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.civildefence.api.ApiClient;
+import com.example.civildefence.models.Incident;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ResponderDashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome, tvActiveIncidents;
     private Switch swAvailability;
     private Button btnAssignedIncidents, btnLiveMap, btnNotifications, btnProfile, btnLogout;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_responder_dashboard);
+
+        prefs = getSharedPreferences("civil_defense_prefs", MODE_PRIVATE);
 
         tvWelcome = findViewById(R.id.tv_welcome);
         tvActiveIncidents = findViewById(R.id.tv_active_incidents);
@@ -30,78 +39,88 @@ public class ResponderDashboardActivity extends AppCompatActivity {
         btnProfile = findViewById(R.id.btn_profile);
         btnLogout = findViewById(R.id.btn_logout);
 
-        String email = getSharedPreferences("app_prefs", MODE_PRIVATE)
-                .getString("user_email", "Responder");
+        String email = prefs.getString("user_email", "Responder");
         tvWelcome.setText("Responder: " + email);
 
+        // Load active incidents count
+        loadActiveIncidents();
+
         // Availability toggle
-        swAvailability.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                String status = isChecked ? "Available" : "Busy";
-                Toast.makeText(ResponderDashboardActivity.this,
-                        "API: PATCH /employees/me/status - Status: " + status,
-                        Toast.LENGTH_SHORT).show();
-            }
+        swAvailability.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            String status = isChecked ? "Available" : "Busy";
+            Toast.makeText(this, "Status: " + status, Toast.LENGTH_SHORT).show();
+
+            // Update availability via API
+            updateAvailabilityStatus(isChecked);
         });
 
-        // Assigned Incidents button
-        btnAssignedIncidents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResponderDashboardActivity.this,
-                        "Navigating to Assigned Incidents\nAPI: GET /incidents?assigned_to=me&status=active",
-                        Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ResponderDashboardActivity.this, AssignedIncidentsActivity.class));
-            }
+        // Navigation buttons
+        btnAssignedIncidents.setOnClickListener(v -> {
+            startActivity(new Intent(this, AssignedIncidentsActivity.class));
         });
 
-        // Live Map button
-        btnLiveMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResponderDashboardActivity.this,
-                        "Opening Live Map\nAPI: GET /vehicles/locations, GET /incidents?active=true",
-                        Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ResponderDashboardActivity.this, LiveMapActivity.class));
-            }
+        btnLiveMap.setOnClickListener(v -> {
+            startActivity(new Intent(this, LiveMapActivity.class));
         });
 
-        // Notifications button
-        btnNotifications.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResponderDashboardActivity.this,
-                        "Navigating to Notifications\nAPI: GET /notifications",
-                        Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ResponderDashboardActivity.this, NotificationsActivity.class));
-            }
+        btnNotifications.setOnClickListener(v -> {
+            startActivity(new Intent(this, NotificationsActivity.class));
         });
 
-        // Profile button
-        btnProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(ResponderDashboardActivity.this, ProfileActivity.class));
-            }
+        btnProfile.setOnClickListener(v -> {
+            startActivity(new Intent(this, ProfileActivity.class));
         });
 
-        // Logout button
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ResponderDashboardActivity.this,
-                        "API: POST /auth/logout - Ending shift",
-                        Toast.LENGTH_SHORT).show();
-
-                getSharedPreferences("app_prefs", MODE_PRIVATE)
-                        .edit()
-                        .putBoolean("is_logged_in", false)
-                        .apply();
-
-                startActivity(new Intent(ResponderDashboardActivity.this, LoginActivity.class));
-                finish();
-            }
+        btnLogout.setOnClickListener(v -> {
+            prefs.edit()
+                    .putBoolean("is_logged_in", false)
+                    .remove("access_token")
+                    .apply();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadActiveIncidents();
+    }
+
+    private void loadActiveIncidents() {
+        String token = "Bearer " + prefs.getString("access_token", "");
+
+        ApiClient.getApiService(this).getIncidents(token, 0, 100)
+                .enqueue(new Callback<List<Incident>>() {
+                    @Override
+                    public void onResponse(Call<List<Incident>> call,
+                                           Response<List<Incident>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            int activeCount = 0;
+                            for (Incident inc : response.body()) {
+                                if ("Active".equals(inc.getStatus()) ||
+                                        "Waiting".equals(inc.getStatus())) {
+                                    activeCount++;
+                                }
+                            }
+                            tvActiveIncidents.setText(activeCount + " Active Incidents");
+                        } else {
+                            tvActiveIncidents.setText("0 Active Incidents");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Incident>> call, Throwable t) {
+                        tvActiveIncidents.setText("Connection error");
+                    }
+                });
+    }
+
+    private void updateAvailabilityStatus(boolean isAvailable) {
+        // In production, this would call an API endpoint to update responder status
+        String token = "Bearer " + prefs.getString("access_token", "");
+
+        // For now, we just show the status change
+        // Future: PATCH /api/v1/responders/me/status with {"status": "available"/"busy"}
     }
 }

@@ -72,7 +72,7 @@
                 android:id="@+id/tv_active_incidents"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0 Active Incidents"
+                android:text="Loading..."
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#FF5722" />

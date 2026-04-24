@@ -19,6 +19,9 @@
         android:label="Civil Defense"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         <activity
+            android:name=".ResponderDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
@@ -44,9 +47,6 @@
             android:exported="false" />
         <activity
             android:name=".ReportIncidentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ResponderDashboardActivity"
             android:exported="false" />
         <activity
             android:name=".CitizenDashboardActivity"
