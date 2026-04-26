@@ -29,6 +29,9 @@ public class ApiClient {
                         Request original = chain.request();
                         Request.Builder builder = original.newBuilder();
 
+                        // Log the endpoint being called
+                        android.util.Log.d("API_CALL", "Connecting to: " + original.url().toString());
+
                         if (!token.isEmpty()) {
                             builder.header("Authorization", "Bearer " + token);
                         }

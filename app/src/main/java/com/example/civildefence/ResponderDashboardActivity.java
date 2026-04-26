@@ -5,9 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.civildefence.api.ApiClient;
 import com.example.civildefence.models.Incident;
@@ -19,8 +20,9 @@ import retrofit2.Response;
 public class ResponderDashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome, tvActiveIncidents;
-    private Switch swAvailability;
-    private Button btnAssignedIncidents, btnLiveMap, btnNotifications, btnProfile, btnLogout;
+    private MaterialSwitch swAvailability;
+    private MaterialCardView btnAssignedIncidents, btnLiveMap, btnNotifications, btnProfile;
+    private Button btnLogout;
     private SharedPreferences prefs;
 
     @Override

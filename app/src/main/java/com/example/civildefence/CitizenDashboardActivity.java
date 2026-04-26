@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.civildefence.api.ApiClient;
 import com.example.civildefence.api.ApiService;
 import com.example.civildefence.models.DailyReport;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,8 +24,8 @@ import java.util.Locale;
 public class CitizenDashboardActivity extends AppCompatActivity {
 
     private TextView tvWelcome, tvActiveAlerts, tvMyReportsCount;
-    private FloatingActionButton fabReportIncident;
-    private Button btnMyReports, btnAlerts, btnProfile, btnLogout;
+    private ExtendedFloatingActionButton fabReportIncident;
+    private MaterialCardView btnMyReports, btnAlerts, btnProfile, btnLogout;
     private SharedPreferences prefs;
 
     @Override

@@ -51,8 +51,14 @@ public class SplashActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                             // Network error, but user was logged in
-                            // Navigate to dashboard (offline mode)
-                            navigateToDashboard();
+                            // Navigate to dashboard if we have a role, otherwise login
+                            SharedPreferences prefs = getSharedPreferences("civil_defense_prefs", MODE_PRIVATE);
+                            String role = prefs.getString("user_role", "");
+                            if (!role.isEmpty()) {
+                                navigateToDashboard();
+                            } else {
+                                navigateToLogin();
+                            }
                         }
                     });
         } else {
@@ -71,11 +77,13 @@ public class SplashActivity extends AppCompatActivity {
             intent = new Intent(SplashActivity.this, CitizenDashboardActivity.class);
         }
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         finish();
     }
 
     private void navigateToLogin() {
         startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         finish();
     }
 }

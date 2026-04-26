@@ -2,4 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Civil Defense Professional Palette -->
+    <color name="primary_navy">#1A237E</color>
+    <color name="primary_navy_dark">#0D47A1</color>
+    <color name="primary_red">#D32F2F</color>
+    <color name="primary_red_dark">#B71C1C</color>
+    <color name="accent_gold">#FFD700</color>
+    <color name="surface_light">#F8F9FA</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="divider">#BDBDBD</color>
+
+    <!-- Status Colors -->
+    <color name="status_emergency">#D32F2F</color>
+    <color name="status_warning">#FFA000</color>
+    <color name="status_success">#388E3C</color>
+    <color name="status_info">#1976D2</color>
 </resources>

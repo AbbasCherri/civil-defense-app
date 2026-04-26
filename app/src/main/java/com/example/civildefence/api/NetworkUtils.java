@@ -4,7 +4,7 @@ public class NetworkUtils {
     // Change this URL to the computer IP address when running locally
     // For Android Emulator connecting to host machine: http://10.0.2.2:8000
     // For physical device on same WiFi: http://192.168.x.x:8000
-    public static final String BASE_URL = "http://192.168.1.100:8000"; // CHANGE THIS
+    public static final String BASE_URL = "http://192.168.18.7:8000"; // UPDATED TO LOCAL IP
 
     public static final String API_PREFIX = "/api/v1";
 
